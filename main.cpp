@@ -20,6 +20,7 @@ int main(){
     insert(root, 70);
     insert(root, 60);
     insert(root, 80);
+  
     /* 
               50
            /     \
@@ -52,16 +53,14 @@ int main(){
     printGivenLevel(root, level);
     std::cout << std::endl;
 
-
     std::cout << "\n< ------------ Delete Nodes ---------- >\n" << std::endl;
-    deleteNode(root, 30);
-    // deleteNode(root, 70);
-    // deleteNode(root, 60);
+    // deleteNode(root, 50);
+
 
     std::cout << "\n< ------------ printLevelOrder ---------- >\n" << std::endl;
     printLevelOrder(root);
 
     std::cout << "\n< ---------------- END Tests ---------------- >\n" << std::endl;
-    while(1);
+    // while(1);
     return (0);
 }

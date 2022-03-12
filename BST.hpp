@@ -8,6 +8,7 @@ typedef struct s_node
     int data;
     struct s_node *left; // The left subtree , keys lesser than node's key
     struct s_node *right; // The right subtree , keys greater than node's key
+    struct s_node *parent;
 
 } t_node ;
 
@@ -15,7 +16,7 @@ t_node*     newNode(int item)
 {
     t_node* tmp = new t_node();
     tmp->data = item;
-    tmp->left = tmp->right = NULL;
+    tmp->left = tmp->right = tmp->parent = NULL;
     return tmp;
 }
 
@@ -23,10 +24,20 @@ t_node*     insert(t_node* node, int data)
 {
     if(!node)
         return newNode(data);
+
     if (data < node->data)
-        node->left = insert(node->left, data);
+    {
+        t_node  *lchild = insert(node->left, data);
+        node->left = lchild;
+        lchild->parent = node;
+        
+    }
     else if (data > node->data)
-        node->right = insert(node->right, data);
+    {
+        t_node  *rchild = insert(node->right, data);
+        node->right = rchild;
+        rchild->parent = node;
+    }
     return node;
 }
 
@@ -130,44 +141,69 @@ t_node* findNode(t_node *root, int key)
         return (NULL);
 }
 
-t_node* deleteNode(t_node *root, int data)
+t_node* deleteNode(t_node *root, int key)
 {
-    // Stop Condition
-    if (!root)
-        return (root);
-    
-    // If data to be deleted is smaller than the root data.
-    if (data < root->data)
-        root->left = deleteNode(root->left, data);
+    t_node* del_node = findNode(root, key);
+    if (!del_node)
+        return (NULL);
 
-    // If data to be deleted is greater than the root data.
-    else if (data > root->data)
-        root->right = deleteNode(root->right, data);
-
-    // If data to be deleted is same as the root data.
-    else
-    {
-        // Case 1 and 2: Node with only one childe or non child
-        if (!root->left) // right of node is exist
-        {
-            t_node* tmp = root->right;
-            free(root);
-            return(tmp);
-        }
-        else if (!root->right) // left of node is exist
-        {
-            t_node* tmp = root->left;
-            free(root);
-            return tmp;
-        }
-        // Case 3: Node with two children 
-            // -- get smallest in right subtree
-        t_node* tmp = minValueNode(root->right);
-            // -- copy the inorder successor's content to the this node;
-        root->data = tmp->data;
-            // -- delete the inorder successor
-        root->right = deleteNode(root->right, tmp->data); 
+    //---- 1 - Case if key is leaf node ----//
+   if (!del_node->left && !del_node->right)
+   {
+       if (del_node->parent->left->data == key)
+       {
+           delete del_node->parent->left;
+            del_node->parent->left = NULL;
+       }
+       else
+       {
+           delete del_node->parent->right;
+            del_node->parent->right = NULL;
+       }    
+   }
+   //---- 2-1 - Case if node found has 1 child on left ----//
+   else if (del_node->left && !del_node->right)
+   {    
+       del_node->left->parent = del_node->parent; // change parent of child left
+       // if node is on left parent
+       if (del_node->parent->left->data == key)
+       {
+            del_node->parent->left = del_node->left;
+            delete del_node;
+       }
+       // if node is on right parent
+       else
+       {
+           del_node->parent->right = del_node->left;
+           delete del_node;
+       }
+   }
+    //---- 2-1 - Case if node has 1 child right----//
+    else if (!del_node->left && del_node->right)
+    {   
+        del_node->right->parent = del_node->parent; // change parent of child right
+        // if node is on left parent
+       if (del_node->parent->left->data == key)
+       {
+            del_node->parent->left = del_node->right;
+            delete del_node;
+       }
+       // if node is on left parent
+       else
+       {
+           del_node->parent->right = del_node->right;
+            delete del_node;
+       }
     }
-    return (root);
+   // ---- 3 - Case if node has 2 child----//
+    else  if (del_node->left && del_node->right)
+    {
+        // find minimum value
+        t_node* minVal = minValueNode(del_node->right);
+        int min = minVal->data;
+        deleteNode(root, min);
+        del_node->data = min;
+    }
+   return root;
 }
 #endif
