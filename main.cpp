@@ -29,22 +29,22 @@ int main(){
        20   40  60   80
     */  
     
-    // -- inorder display -----------------/
-    std::cout << "\n< --------------- Inorder ----------------- >\n" << std::endl;
-    inorder(root);
-    std::cout << std::endl;
+    // // -- inorder display -----------------/
+    // std::cout << "\n< --------------- Inorder ----------------- >\n" << std::endl;
+    // inorder(root);
+    // std::cout << std::endl;
 
-     // -- display in preorder traversal --/
-    std::cout << "\n< ------------ PreOrder traversal ---------- >\n" << std::endl;
-    preorder(root);
-    std::cout << std::endl;
+    //  // -- display in preorder traversal --/
+    // std::cout << "\n< ------------ PreOrder traversal ---------- >\n" << std::endl;
+    // preorder(root);
+    // std::cout << std::endl;
 
-     // -- display in preorder traversal --/
-    std::cout << "\n< ------------ PostOrder traversal ---------- >\n" << std::endl;
-    postorder(root);
-    std::cout << std::endl;
+    //  // -- display in preorder traversal --/
+    // std::cout << "\n< ------------ PostOrder traversal ---------- >\n" << std::endl;
+    // postorder(root);
+    // std::cout << std::endl;
     
-    std::cout << "\n< ------------ Height of BST ---------- >\n" << std::endl;
+    std::cout << "\n< ------------ Height of AVL ---------- >\n" << std::endl;
     std::cout << "Height of our BST : " << height(root) << std::endl;
 
     std::cout << "\n< ------------ PrintGivenLevel ---------- >\n" << std::endl;
