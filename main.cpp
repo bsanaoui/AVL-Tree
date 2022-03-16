@@ -47,18 +47,16 @@ int main(){
     std::cout << "\n< ------------ Height of AVL ---------- >\n" << std::endl;
     std::cout << "Height of our BST : " << height(root) << std::endl;
 
-    std::cout << "\n< ------------ PrintGivenLevel ---------- >\n" << std::endl;
-    int level = 3;
-    std::cout << "Print Level " << level << " : " << std::endl;
-    printGivenLevel(root, level);
-    std::cout << std::endl;
 
     std::cout << "\n< ------------ Delete Nodes ---------- >\n" << std::endl;
-    // deleteNode(root, 50);
+    deleteNode(root, 50);
 
 
     std::cout << "\n< ------------ printLevelOrder ---------- >\n" << std::endl;
     printLevelOrder(root);
+
+     std::cout << "\n< ------------ print Tree---------- >\n" << std::endl;
+    printTree(root, "", true);
 
     std::cout << "\n< ---------------- END Tests ---------------- >\n" << std::endl;
     // while(1);

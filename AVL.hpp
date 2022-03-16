@@ -3,31 +3,106 @@
 
 #include <iostream>
 
+
 typedef struct s_node
 {
-    int data;
-    struct s_node *left; // The left subtree , keys lesser than node's key
-    struct s_node *right; // The right subtree , keys greater than node's key
+    int             data;
+    struct s_node   *left; // The left subtree , keys lesser than node's key
+    struct s_node   *right; // The right subtree , keys greater than node's key
+    int             height;
 
 } t_node ;
 
-t_node*     newNode(int item)
+t_node* minValueNode(t_node *node);
+
+t_node*     newNode(int data)
 {
     t_node* tmp = new t_node();
-    tmp->data = item;
+    tmp->data = data;
     tmp->left = tmp->right = NULL;
+    tmp->height = 1;
     return tmp;
+}
+
+// Calculate height fast
+int height(t_node *node) {
+  if (node == NULL)
+    return 0;
+  return node->height;
+}
+
+// Get the balance factor of each node
+int getBalanceFactor(t_node *node) {
+  if (node == NULL)
+    return 0;
+  return height(node->left) -
+       height(node->right);
+}
+
+// Rotate right
+t_node *rightRotate(t_node *y) {
+  t_node *x = y->left;
+  t_node *beta = x->right;
+  x->right = y;
+  y->left = beta;
+  y->height = std::max(height(y->left),
+          height(y->right)) +
+        1;
+  x->height = std::max(height(x->left),
+          height(x->right)) +
+        1;
+  return x;
+}
+
+// Rotate left
+t_node *leftRotate(t_node *x) {
+  t_node *y = x->right;
+  t_node *beta = y->left;
+  y->left = x;
+  x->right = beta;
+  x->height = std::max(height(x->left),
+          height(x->right)) +
+        1;
+  y->height = std::max(height(y->left),
+          height(y->right)) +
+        1;
+  return y;
 }
 
 t_node*     insert(t_node* node, int data)
 {
-    if(!node)
-        return newNode(data);
-    if (data < node->data)
-        node->left = insert(node->left, data);
-    else if (data > node->data)
-        node->right = insert(node->right, data);
+    // Find the correct postion and insert the node
+  if (node == NULL)
+    return (newNode(data));
+  if (data < node->data)
+    node->left = insert(node->left, data);
+  else if (data > node->data)
+    node->right = insert(node->right, data);
+  else
     return node;
+
+  // Update the balance factor of each node and
+  // balance the tree
+  node->height = 1 + std::max(height(node->left),
+               height(node->right));
+  int balanceFactor = getBalanceFactor(node);
+  if (balanceFactor > 1) {
+    if (data < node->left->data) {
+      return rightRotate(node);
+    } else if (data > node->left->data) {
+      node->left = leftRotate(node->left);
+      return rightRotate(node);
+    }
+  }
+  if (balanceFactor < -1) {
+    if (data > node->right->data) {
+      return leftRotate(node);
+    } else if (data < node->right->data) {
+      node->right = rightRotate(node->right);
+      return leftRotate(node);
+    }
+  }
+  return node;
 }
 
 // Display elements; inorder traversal of BST  : non-decreasing order.
@@ -65,19 +140,19 @@ void       postorder(t_node *root)
 
 // height of the BST
 // The depth of a node in a binary tree is the total number of edges from the root node to the target node
-int        height(t_node* node)
-{
-    if (!node)
-        return 0;
-    else
-    {
-        // calculate the depth of each subtree
-        int l_depth = height(node->left);
-        int r_depth = height(node->right);
-        // use the larger one
-        return (std::max(l_depth, r_depth) + 1);
-    }
-}
+// int        height(t_node* node)
+// {
+//     if (!node)
+//         return 0;
+//     else
+//     {
+//         // calculate the depth of each subtree
+//         int l_depth = height(node->left);
+//         int r_depth = height(node->right);
+//         // use the larger one
+//         return (std::max(l_depth, r_depth) + 1);
+//     }
+// }
 
 void    printGivenLevel(t_node *root, int level)
 {
@@ -132,42 +207,73 @@ t_node* findNode(t_node *root, int key)
 
 t_node* deleteNode(t_node *root, int data)
 {
-    // Stop Condition
-    if (!root)
-        return (root);
-    
-    // If data to be deleted is smaller than the root data.
+    // Find the node and delete it
+    if (root == NULL)
+        return root;
     if (data < root->data)
         root->left = deleteNode(root->left, data);
-
-    // If data to be deleted is greater than the root data.
     else if (data > root->data)
         root->right = deleteNode(root->right, data);
-
-    // If data to be deleted is same as the root data.
-    else
-    {
-        // Case 1 and 2: Node with only one childe or non child
-        if (!root->left) // right of node is exist
-        {
-            t_node* tmp = root->right;
-            free(root);
-            return(tmp);
+    else {
+        if ((root->left == NULL) ||
+        (root->right == NULL)) {
+        t_node *temp = root->left ? root->left : root->right;
+        if (temp == NULL) {
+            temp = root;
+            root = NULL;
+        } else
+            *root = *temp;
+        free(temp);
+        } else {
+        t_node *temp = minValueNode(root->right);
+        root->data = temp->data;
+        root->right = deleteNode(root->right,
+                    temp->data);
         }
-        else if (!root->right) // left of node is exist
-        {
-            t_node* tmp = root->left;
-            free(root);
-            return tmp;
-        }
-        // Case 3: Node with two children 
-            // -- get smallest in right subtree
-        t_node* tmp = minValueNode(root->right);
-            // -- copy the inorder successor's content to the this node;
-        root->data = tmp->data;
-            // -- delete the inorder successor
-        root->right = deleteNode(root->right, tmp->data); 
     }
-    return (root);
+
+    if (root == NULL)
+        return root;
+
+    // Update the balance factor of each node and
+    // balance the tree
+    root->height = 1 + std::max(height(root->left),
+                height(root->right));
+    int balanceFactor = getBalanceFactor(root);
+    if (balanceFactor > 1) {
+        if (getBalanceFactor(root->left) >= 0) {
+        return rightRotate(root);
+        } else {
+        root->left = leftRotate(root->left);
+        return rightRotate(root);
+        }
+    }
+    if (balanceFactor < -1) {
+        if (getBalanceFactor(root->right) <= 0) {
+        return leftRotate(root);
+        } else {
+        root->right = rightRotate(root->right);
+        return leftRotate(root);
+        }
+    }
+    return root;
 }
+
+// Print the tree
+void printTree(t_node *root, std::string indent, bool last) {
+  if (root != nullptr) {
+    std::cout << indent;
+    if (last) {
+      std::cout << "R----";
+      indent += "   ";
+    } else {
+      std::cout << "L----";
+      indent += "|  ";
+    }
+    std::cout << root->data << std::endl;
+    printTree(root->left, indent, false);
+    printTree(root->right, indent, true);
+  }
+}
+
 #endif
