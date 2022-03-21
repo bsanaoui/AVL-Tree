@@ -3,7 +3,6 @@
 
 #include <iostream>
 
-
 typedef struct s_node
 {
     int             data;
@@ -12,6 +11,9 @@ typedef struct s_node
     int             height;
 
 } t_node ;
+
+// Temporary node for case 2
+t_node* temp = new t_node;
 
 t_node* minValueNode(t_node *node);
 
@@ -98,7 +100,7 @@ t_node*     insert(t_node* node, int data)
     if (data > node->right->data) {
       return leftRotate(node);
     } else if (data < node->right->data) {
-      node->right = rightRotate(node->right);
+      node->right = rightRotate(node->right); 
       return leftRotate(node);
     }
   }
@@ -275,5 +277,134 @@ void printTree(t_node *root, std::string indent, bool last) {
     printTree(root->right, indent, true);
   }
 }
+
+t_node* findMin(t_node* root)
+{
+    while (root->left)
+      root = root->left;
+    return root;
+}
+
+t_node* findMax(t_node* root)
+{
+    while (root->right)
+        root = root->right;
+    return root;
+}
+
+t_node* nextNode(t_node* root, t_node* x)
+{
+    t_node* succ = NULL;
+    if (!root)
+        return NULL;
+    while (1){
+        if (x->data < root->data){
+            succ = root;
+            root = root->left;
+        }
+        else if (x->data > root->data)
+            root = root->right;
+        else {
+            if (root->right)
+                succ = findMin(root->right);
+            break;
+        }
+        if (!root)
+          return succ;
+    }
+    return succ;
+}
+
+t_node* previousNode(t_node* root, t_node* x)
+{
+    t_node* prec = NULL;
+    if (!root)
+        return NULL;
+    while (1){
+        if (x->data < root->data)
+            root = root->left;
+        else if (x->data > root->data){
+            prec = root;
+            root = root->right;
+        }
+        else {
+            if (root->left)
+                prec = findMax(root->left);
+            break;
+        }
+        if (!root)
+          return prec;
+    }
+    return prec;
+}
+
+// // function to find left most node in a tree
+// t_node* leftMostNode(t_node* node)
+// {
+//     while (node != NULL && node->left != NULL)
+//         node = node->left;
+//     return node;
+// }
+ 
+// // function to find right most node in a tree
+// t_node* rightMostNode(t_node* node)
+// {
+//     while (node != NULL && node->right != NULL)
+//         node = node->right;
+//     return node;
+// }
+ 
+// // recursive function to find the Inorder Successor
+// // when the right child of node x is NULL
+// t_node* findInorderRecursive(t_node* root, t_node* x )
+// {
+//     if (!root)
+//         return NULL;
+ 
+//     if (root==x || (temp = findInorderRecursive(root->left,x)) ||
+//                    (temp = findInorderRecursive(root->right,x)))
+//     {
+//         if (temp)
+//         {
+//             if (root->left == temp)
+//             {
+//                 // std::cout << "Inorder Successor of " << x->data;
+//                 // std::cout << " is "<< root->data << "\n";
+//                 return NULL;
+//             }
+//         }
+ 
+//         return root;
+//     }
+ 
+//     return NULL;
+// }
+ 
+// // function to find inorder successor of
+// // a node
+// t_node* inorderSuccessor(t_node* root, t_node* x)
+// {
+//     // Case1: If right child is not NULL
+//     if (x->right != NULL)
+//     {
+//         t_node* inorderSucc = leftMostNode(x->right);
+//         // std::cout<<"Inorder Successor of "<<x->data<<" is ";
+//         // std::cout<<inorderSucc->data<<"\n";
+//         return (inorderSucc);
+//     }
+ 
+//     // Case2: If right child is NULL
+//     if (x->right == NULL)
+//     {   
+//         t_node* rightMost = rightMostNode(root);
+ 
+//         // case3: If x is the right most node
+//         if (rightMost == x)
+//             return (NULL);
+//         else
+//             return (findInorderRecursive(root, x));
+//     }
+//     return NULL;
+// }
 
 #endif

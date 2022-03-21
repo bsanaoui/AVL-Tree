@@ -14,12 +14,12 @@ int main(){
     // }
 
     root = insert(root, 50);
-    insert(root, 30);
-    insert(root, 20);
-    insert(root, 40);
-    insert(root, 70);
-    insert(root, 60);
-    insert(root, 80);
+    root = insert(root, 30);
+    root = insert(root, 20);
+    root = insert(root, 40);
+    root = insert(root, 70);
+    root = insert(root, 60);
+    root = insert(root, 80);
   
     /* 
               50
@@ -49,14 +49,20 @@ int main(){
 
 
     std::cout << "\n< ------------ Delete Nodes ---------- >\n" << std::endl;
-    deleteNode(root, 50);
+    // deleteNode(root, 50);
 
 
     std::cout << "\n< ------------ printLevelOrder ---------- >\n" << std::endl;
     printLevelOrder(root);
 
-     std::cout << "\n< ------------ print Tree---------- >\n" << std::endl;
+    std::cout << "\n< ------------ print Tree ---------- >\n" << std::endl;
     printTree(root, "", true);
+
+    std::cout << "\n< ------------ Next Node---------- >\n" << std::endl;
+    std::cout << "Inorder Successor of " << root->right->left->data << " is ";
+    t_node *next = nextNode(root, root->right->left); //60
+    if (next)
+      std::cout << next->data << std::endl;
 
     std::cout << "\n< ---------------- END Tests ---------------- >\n" << std::endl;
     // while(1);
